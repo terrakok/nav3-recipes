@@ -13,16 +13,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import androidx.savedstate.serialization.SavedStateConfiguration
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 import org.company.app.ContentGreen
 import org.company.app.ContentMauve
 import org.company.app.ContentOrange
-import androidx.navigation3.runtime.rememberNavBackStack
-import androidx.savedstate.serialization.SavedStateConfiguration
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
-import org.company.app.rememberNavBackStackFix
 
 /**
  * This recipe shows how to override the default animations at the `NavDisplay` level, and at the
@@ -50,7 +49,7 @@ private val config = SavedStateConfiguration {
 
 @Composable
 fun AnimatedCase() {
-    val backStack = rememberNavBackStackFix(config, ScreenA)
+    val backStack = rememberNavBackStack(config, ScreenA)
 
     NavDisplay(
         backStack = backStack,

@@ -1,10 +1,10 @@
 package org.company.app.dialog
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -16,20 +16,17 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.scene.DialogSceneStrategy
-import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.ui.NavDisplay
-import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.NavigationEventTransitionState
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
-import androidx.navigationevent.compose.NavigationEventHandler
-import androidx.navigationevent.compose.rememberNavigationEventState
 import androidx.savedstate.serialization.SavedStateConfiguration
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import org.company.app.ContentBlue
 import org.company.app.ContentGreen
-import org.company.app.rememberNavBackStackFix
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 /**
  * This recipe demonstrates how to create a dialog. It does this by:
@@ -56,9 +53,10 @@ private val config = SavedStateConfiguration {
     }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun DialogCase() {
-    val backStack = rememberNavBackStackFix(config, RouteA)
+    val backStack = rememberNavBackStack(config, RouteA)
     val dialogStrategy = remember { DialogSceneStrategy<NavKey>() }
 
     NavDisplay(
@@ -84,13 +82,7 @@ fun DialogCase() {
                     title = "Route id: ${key.id}",
                     modifier = Modifier.clip(
                         shape = RoundedCornerShape(16.dp)
-                    ),
-                    content = {
-                        val dispatcher = LocalNavigationEventDispatcherOwner.current?.navigationEventDispatcher!!
-                        val state by dispatcher.transitionState.collectAsStateWithLifecycle()
-
-                        Text("Route B content: progress = ${(state as? NavigationEventTransitionState.InProgress)?.latestEvent?.progress ?: 0}")
-                    }
+                    )
                 )
             }
         }

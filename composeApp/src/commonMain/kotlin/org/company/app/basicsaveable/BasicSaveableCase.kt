@@ -5,15 +5,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.ui.NavDisplay
-import kotlinx.serialization.Serializable
-import org.company.app.ContentBlue
-import org.company.app.ContentGreen
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import org.company.app.rememberNavBackStackFix
+import org.company.app.ContentBlue
+import org.company.app.ContentGreen
 
 /**
  * Basic example with a persistent back stack state.
@@ -39,7 +38,7 @@ private val config = SavedStateConfiguration {
 
 @Composable
 fun BasicSaveableCase() {
-    val backStack = rememberNavBackStackFix( config, RouteA)
+    val backStack = rememberNavBackStack( config, RouteA)
 
     NavDisplay(
         backStack = backStack,

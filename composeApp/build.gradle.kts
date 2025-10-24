@@ -47,10 +47,12 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.viewmodel.nav3)
             implementation(libs.androidx.lifecycle.runtime)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.androidx.nav3.ui)
             implementation(libs.androidx.material3.adaptive)
+            implementation(libs.androidx.material3.adaptive.nav3)
         }
 
         androidMain.dependencies {
@@ -60,6 +62,7 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
+            implementation(libs.kotlinx.coroutines.swing)
         }
 
     }

@@ -3,13 +3,18 @@ package org.company.app.scenes.materiallistdetail
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
+import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
+import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import kotlinx.serialization.Serializable
@@ -19,21 +24,20 @@ import org.company.app.ContentBlue
 import org.company.app.ContentGreen
 import org.company.app.ContentRed
 import org.company.app.ContentYellow
-import org.company.app.rememberNavBackStackFix
 
 /**
  * This example uses the Material ListDetailSceneStrategy to create an adaptive scene. It has three
  * destinations: ConversationList, ConversationDetail and Profile. When the window width allows it,
  * the content for these destinations will be shown in a two pane layout.
  */
-@Serializable
-private object ConversationList : NavKey
+    @Serializable
+    private object ConversationList : NavKey
 
-@Serializable
-private data class ConversationDetail(val id: String) : NavKey
+    @Serializable
+    private data class ConversationDetail(val id: String) : NavKey
 
-@Serializable
-private data object Profile : NavKey
+    @Serializable
+    private data object Profile : NavKey
 
 private val config = SavedStateConfiguration {
     serializersModule = SerializersModule {
@@ -45,22 +49,24 @@ private val config = SavedStateConfiguration {
     }
 }
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun MaterialListDetailCase() {
-    // wait androidx.compose.material3.adaptive.navigation3
-    /*
-    val backStack = rememberNavBackStackFix(config, ConversationList)
+    val backStack = rememberNavBackStack(config, ConversationList)
 
     // Override the defaults so that there isn't a horizontal space between the panes.
+    // See b/418201867
     val windowAdaptiveInfo = currentWindowAdaptiveInfo()
     val directive = remember(windowAdaptiveInfo) {
-        calculatePaneScaffoldDirective(windowAdaptiveInfo).copy(horizontalPartitionSpacerSize = 0.dp)
+        calculatePaneScaffoldDirective(windowAdaptiveInfo)
+            .copy(horizontalPartitionSpacerSize = 0.dp)
     }
     val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>(directive = directive)
 
+
     NavDisplay(
         backStack = backStack,
-        onBack = { keysToRemove -> repeat(keysToRemove) { backStack.removeLastOrNull() } },
+        onBack = { backStack.removeLastOrNull() },
         sceneStrategy = listDetailStrategy,
         entryProvider = entryProvider {
             entry<ConversationList>(
@@ -98,6 +104,4 @@ fun MaterialListDetailCase() {
             }
         }
     )
-
-     */
 }
