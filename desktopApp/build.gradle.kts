@@ -8,7 +8,7 @@ plugins {
 
 dependencies {
     implementation(project(":sharedUI"))
-    implementation(compose.ui)
+    implementation(libs.compose.ui)
 }
 
 compose.desktop {
