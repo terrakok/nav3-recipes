@@ -2,6 +2,8 @@
 
 Original: https://github.com/android/nav3-recipes
 
+Web demo: https://terrakok.github.io/nav3-recipes/
+
 https://github.com/user-attachments/assets/3acf291a-203b-4b06-8491-f3a0bdfdd799
 
 ### Android
