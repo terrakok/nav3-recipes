@@ -22,14 +22,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key.Companion.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigationevent.DirectNavigationEventInput
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import com.example.nav3recipes.animations.AnimatedActivity
 import com.example.nav3recipes.basic.BasicActivity
 import com.example.nav3recipes.basicdsl.BasicDslActivity
@@ -47,6 +52,9 @@ import com.example.nav3recipes.results.state.ResultStateActivity
 import com.example.nav3recipes.scenes.listdetail.ListDetailActivity
 import com.example.nav3recipes.scenes.twopane.TwoPaneActivity
 import com.example.nav3recipes.theme.AppTheme
+import nav3play.sharedui.generated.resources.Res
+import nav3play.sharedui.generated.resources.arrow_back
+import org.jetbrains.compose.resources.vectorResource
 
 /**
  * Activity to show all available recipes and allow users to launch each one.
@@ -117,10 +125,32 @@ fun App(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipePickerActivity() {
+    val backStack = remember { mutableStateListOf(Root) }
+    val dispatcher = LocalNavigationEventDispatcherOwner.current
+        ?.navigationEventDispatcher ?: return
+    val navInput = remember { DirectNavigationEventInput() }
+    DisposableEffect(dispatcher) {
+        dispatcher.addInput(navInput)
+        onDispose { dispatcher.removeInput(navInput) }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
+                navigationIcon = {
+                    if (backStack.size > 1) {
+                        IconButton(
+                            onClick = { navInput.backCompleted() }
+                        ) {
+                            Icon(
+                                imageVector = vectorResource(resource = Res.drawable.arrow_back),
+                                contentDescription = null,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                    }
+                },
                 title = { Text("Recipes") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -130,7 +160,6 @@ fun RecipePickerActivity() {
         },
         contentWindowInsets = WindowInsets.systemBars.exclude(WindowInsets.navigationBars),
     ) { innerPadding ->
-        val backStack = remember { mutableStateListOf(Root) }
         NavDisplay(
             modifier = Modifier
                 .fillMaxSize()
