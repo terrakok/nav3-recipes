@@ -1,0 +1,120 @@
+package com.example.nav3recipes.material.supportingpane
+
+/*
+ * Copyright 2025 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
+import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
+import androidx.compose.material3.adaptive.navigation3.SupportingPaneSceneStrategy
+import androidx.compose.material3.adaptive.navigation3.rememberSupportingPaneSceneStrategy
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
+import androidx.savedstate.serialization.SavedStateConfiguration
+import com.example.nav3recipes.content.ContentBlue
+import com.example.nav3recipes.content.ContentGreen
+import com.example.nav3recipes.content.ContentRed
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+
+@Serializable
+private object MainVideo : NavKey
+
+@Serializable
+private data object RelatedVideos : NavKey
+
+@Serializable
+private data object Profile : NavKey
+
+private val config = SavedStateConfiguration {
+    serializersModule = SerializersModule {
+        polymorphic(NavKey::class) {
+            subclass(MainVideo::class, MainVideo.serializer())
+            subclass(RelatedVideos::class, RelatedVideos.serializer())
+            subclass(Profile::class, Profile.serializer())
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+fun MaterialSupportingPaneActivity() {
+
+    val backStack = rememberNavBackStack(config, MainVideo)
+
+    // Override the defaults so that there isn't a horizontal or vertical space between the panes.
+    // See b/444438086
+    val windowAdaptiveInfo = currentWindowAdaptiveInfo()
+    val directive = remember(windowAdaptiveInfo) {
+        calculatePaneScaffoldDirective(windowAdaptiveInfo)
+            .copy(horizontalPartitionSpacerSize = 0.dp, verticalPartitionSpacerSize = 0.dp)
+    }
+
+    // Override the defaults so that the supporting pane can be dismissed by pressing back.
+    // See b/445826749
+    val supportingPaneStrategy = rememberSupportingPaneSceneStrategy<NavKey>(
+        backNavigationBehavior = BackNavigationBehavior.PopUntilCurrentDestinationChange,
+        directive = directive
+    )
+
+    NavDisplay(
+        backStack = backStack,
+        onBack = { backStack.removeLastOrNull() },
+        sceneStrategy = supportingPaneStrategy,
+        entryProvider = entryProvider {
+            entry<MainVideo>(
+                metadata = SupportingPaneSceneStrategy.mainPane()
+            ) {
+                ContentRed("Video content") {
+                    Button(onClick = {
+                        backStack.add(RelatedVideos)
+                    }) {
+                        Text("View related videos")
+                    }
+                }
+            }
+            entry<RelatedVideos>(
+                metadata = SupportingPaneSceneStrategy.supportingPane()
+            ) {
+                ContentBlue("Related videos") {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Button(onClick = {
+                            backStack.add(Profile)
+                        }) {
+                            Text("View profile")
+                        }
+                    }
+                }
+            }
+            entry<Profile>(
+                metadata = SupportingPaneSceneStrategy.extraPane()
+            ) {
+                ContentGreen("Profile")
+            }
+        }
+    )
+}

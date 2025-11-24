@@ -12,8 +12,6 @@ pluginManagement {
         }
         gradlePluginPortal()
         mavenCentral()
-        mavenLocal()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 
@@ -28,14 +26,10 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
-        mavenLocal()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
-plugins {
-    //https://github.com/JetBrains/compose-hot-reload?tab=readme-ov-file#set-up-automatic-provisioning-of-the-jetbrains-runtime-jbr-via-gradle
-    id("org.gradle.toolchains.foojay-resolver-convention").version("1.0.0")
-}
-
-include(":composeApp")
+include(":sharedUI")
+include(":androidApp")
+include(":desktopApp")
+include(":webApp")
 

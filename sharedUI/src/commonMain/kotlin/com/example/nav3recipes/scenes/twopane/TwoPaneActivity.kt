@@ -1,0 +1,113 @@
+/*
+ * Copyright 2025 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.example.nav3recipes.scenes.twopane
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
+import androidx.savedstate.serialization.SavedStateConfiguration
+import com.example.nav3recipes.content.ContentBase
+import com.example.nav3recipes.content.ContentGreen
+import com.example.nav3recipes.content.ContentRed
+import com.example.nav3recipes.ui.theme.colors
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+
+@Serializable
+private object Home : NavKey
+
+@Serializable
+private data class Product(val id: Int) : NavKey
+
+@Serializable
+private data object Profile : NavKey
+
+private val config = SavedStateConfiguration {
+    serializersModule = SerializersModule {
+        polymorphic(NavKey::class) {
+            subclass(Home::class, Home.serializer())
+            subclass(Product::class, Product.serializer())
+            subclass(Profile::class, Profile.serializer())
+        }
+    }
+}
+
+@Composable
+fun TwoPaneActivity() {
+    val backStack = rememberNavBackStack(config, Home)
+    val twoPaneStrategy = rememberTwoPaneSceneStrategy<NavKey>()
+
+    NavDisplay(
+        backStack = backStack,
+        onBack = { backStack.removeLastOrNull() },
+        sceneStrategy = twoPaneStrategy,
+        entryProvider = entryProvider {
+            entry<Home>(
+                metadata = TwoPaneScene.twoPane()
+            ) {
+                ContentRed("Welcome to Nav3") {
+                    Button(onClick = { backStack.addProductRoute(1) }) {
+                        Text("View the first product")
+                    }
+                }
+            }
+            entry<Product>(
+                metadata = TwoPaneScene.twoPane()
+            ) { product ->
+                ContentBase(
+                    "Product ${product.id} ",
+                    Modifier.background(colors[product.id % colors.size])
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Button(onClick = {
+                            backStack.addProductRoute(product.id + 1)
+                        }) {
+                            Text("View the next product")
+                        }
+                        Button(onClick = {
+                            backStack.add(Profile)
+                        }) {
+                            Text("View profile")
+                        }
+                    }
+                }
+            }
+            entry<Profile> {
+                ContentGreen("Profile (single pane only)")
+            }
+        }
+    )
+}
+
+private fun NavBackStack<NavKey>.addProductRoute(productId: Int) {
+    val productRoute =
+        Product(productId)
+    // Avoid adding the same product route to the back stack twice.
+    if (!contains(productRoute)) {
+        add(productRoute)
+    }
+}
