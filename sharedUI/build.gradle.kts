@@ -57,6 +57,10 @@ kotlin {
             implementation(compose.desktop.currentOs)
         }
 
+        webMain.dependencies {
+            implementation(libs.navigation3.browser)
+        }
+
     }
 
     targets

@@ -17,6 +17,7 @@ androidx-activityCompose = "1.12.0"
 kotlinx-serialization = "1.9.0"
 kotlinxCoroutines = "1.10.2"
 material3 = "1.9.0-beta03"
+navigation3-browser = "0.2.0"
 
 [libraries]
 
@@ -37,6 +38,7 @@ compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-mu
 compose-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "compose-multiplatform" }
 compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-multiplatform" }
 compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+navigation3-browser = { module = "com.github.terrakok:navigation3-browser", version.ref = "navigation3-browser" }
 
 [plugins]
 

@@ -24,6 +24,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -51,7 +52,7 @@ import com.example.nav3recipes.theme.AppTheme
 /**
  * Activity to show all available recipes and allow users to launch each one.
  */
-private class Recipe(
+internal class Recipe(
     val name: String,
     val activityFun: @Composable () -> Unit
 )
@@ -114,6 +115,9 @@ fun App(
     }
 }
 
+@Composable
+internal expect fun BrowserIntegration(backStack: SnapshotStateList<Recipe>)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipePickerActivity() {
@@ -131,6 +135,7 @@ fun RecipePickerActivity() {
         contentWindowInsets = WindowInsets.systemBars.exclude(WindowInsets.navigationBars),
     ) { innerPadding ->
         val backStack = remember { mutableStateListOf(Root) }
+        BrowserIntegration(backStack)
         NavDisplay(
             modifier = Modifier
                 .fillMaxSize()
