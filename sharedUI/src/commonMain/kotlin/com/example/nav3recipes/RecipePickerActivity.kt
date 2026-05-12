@@ -40,14 +40,18 @@ import com.example.nav3recipes.bottomsheet.BottomSheetActivity
 import com.example.nav3recipes.commonui.CommonUiActivity
 import com.example.nav3recipes.conditional.ConditionalActivity
 import com.example.nav3recipes.dialog.DialogActivity
+import com.example.nav3recipes.dialogscenedecorator.DialogSceneDecoratorActivity
 import com.example.nav3recipes.material.listdetail.MaterialListDetailActivity
 import com.example.nav3recipes.material.supportingpane.MaterialSupportingPaneActivity
 import com.example.nav3recipes.multiplestacks.MultipleStacksActivity
+import com.example.nav3recipes.navscenedecorator.ResponsiveNavigationSceneDecoratorActivity
 import com.example.nav3recipes.passingarguments.viewmodels.basic.BasicViewModelsActivity
 import com.example.nav3recipes.results.event.ResultEventActivity
 import com.example.nav3recipes.results.state.ResultStateActivity
+import com.example.nav3recipes.retain.RetainActivity
 import com.example.nav3recipes.scenes.listdetail.ListDetailActivity
 import com.example.nav3recipes.scenes.twopane.TwoPaneActivity
+import com.example.nav3recipes.sharedviewmodel.SharedViewModelActivity
 import com.example.nav3recipes.theme.AppTheme
 
 /**
@@ -84,16 +88,16 @@ private val recipes = listOf(
     Heading("Animations"),
     Recipe("NavDisplay and NavEntry animations", { AnimatedActivity() }),
 
-//    Heading("Scene Decorators"),
-//    Recipe("Responsive Navigation UI", { ResponsiveNavigationSceneDecoratorActivity() }),
-//    Recipe("Dialog scene decorator", { DialogSceneDecoratorActivity() }),
+    Heading("Scene Decorators"),
+    Recipe("Responsive Navigation UI", { ResponsiveNavigationSceneDecoratorActivity() }),
+    Recipe("Dialog scene decorator", { DialogSceneDecoratorActivity() }),
 
     Heading("Common use cases"),
     Recipe("Common UI", { CommonUiActivity() }),
     Recipe("Multiple Stacks", { MultipleStacksActivity() }),
     Recipe("Conditional navigation", { ConditionalActivity() }),
-//    Recipe("Retain", { RetainActivity() }),
-//    Recipe("Shared ViewModel", { SharedViewModelActivity() }),
+    Recipe("Retain", { RetainActivity() }),
+    Recipe("Shared ViewModel", { SharedViewModelActivity() }),
 
 //    Heading("Architecture"),
 //    Recipe("Hilt - Modular Navigation", { HiltModularActivity() }),
