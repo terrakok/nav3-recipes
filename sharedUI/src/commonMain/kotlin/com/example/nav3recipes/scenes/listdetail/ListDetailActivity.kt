@@ -115,6 +115,6 @@ private fun NavBackStack<NavKey>.addDetail(detailRoute: ConversationDetail) {
     // Remove any existing detail routes before adding this detail route.
     // In certain scenarios, such as when multiple detail panes can be shown at once, it may
     // be desirable to keep existing detail routes on the back stack.
-    removeIf { it is ConversationDetail }
+    removeAll { it is ConversationDetail }
     add(detailRoute)
 }
