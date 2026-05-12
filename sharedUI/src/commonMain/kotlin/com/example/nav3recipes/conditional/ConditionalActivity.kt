@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.example.nav3recipes.content.ContentBlue
@@ -47,10 +48,10 @@ fun ConditionalActivity() {
             entry<Home> {
                 ContentGreen("Welcome to Nav3. Logged in? ${appBackStack.isLoggedIn}") {
                     Column {
-                        Button(onClick = { appBackStack.add(Profile) }) {
+                        Button(onClick = dropUnlessResumed { appBackStack.add(Profile) }) {
                             Text("Profile")
                         }
-                        Button(onClick = { appBackStack.add(Login) }) {
+                        Button(onClick = dropUnlessResumed { appBackStack.add(Login) }) {
                             Text("Login")
                         }
                     }
@@ -58,7 +59,7 @@ fun ConditionalActivity() {
             }
             entry<Profile> {
                 ContentBlue("Profile screen (only accessible once logged in)") {
-                    Button(onClick = {
+                    Button(onClick = dropUnlessResumed {
                         appBackStack.logout()
                     }) {
                         Text("Logout")
@@ -67,7 +68,7 @@ fun ConditionalActivity() {
             }
             entry<Login> {
                 ContentYellow("Login screen. Logged in? ${appBackStack.isLoggedIn}") {
-                    Button(onClick = {
+                    Button(onClick = dropUnlessResumed {
                         appBackStack.login()
                     }) {
                         Text("Login")

@@ -19,6 +19,7 @@ package com.example.nav3recipes.commonui
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.example.nav3recipes.content.ContentBlue
@@ -86,7 +87,7 @@ fun CommonUiActivity() {
                 }
                 entry<ChatList> {
                     ContentGreen("Chat list screen") {
-                        Button(onClick = { topLevelBackStack.add(ChatDetail) }) {
+                        Button(onClick = dropUnlessResumed { topLevelBackStack.add(ChatDetail) }) {
                             Text("Go to conversation")
                         }
                     }
