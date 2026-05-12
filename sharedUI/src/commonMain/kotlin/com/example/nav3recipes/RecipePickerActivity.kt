@@ -69,6 +69,7 @@ private val recipes = listOf(
     Recipe("Basic", { BasicActivity() }),
     Recipe("Basic DSL", { BasicDslActivity() }),
     Recipe("Basic Saveable", { BasicSaveableActivity() }),
+//    Recipe("Basic Parcelable", { BasicParcelableActivity() }),
 
     Heading("Layouts using Scenes"),
     Recipe("List-detail", { ListDetailActivity() }),
@@ -83,14 +84,21 @@ private val recipes = listOf(
     Heading("Animations"),
     Recipe("NavDisplay and NavEntry animations", { AnimatedActivity() }),
 
+//    Heading("Scene Decorators"),
+//    Recipe("Responsive Navigation UI", { ResponsiveNavigationSceneDecoratorActivity() }),
+//    Recipe("Dialog scene decorator", { DialogSceneDecoratorActivity() }),
+
     Heading("Common use cases"),
     Recipe("Common UI", { CommonUiActivity() }),
     Recipe("Multiple Stacks", { MultipleStacksActivity() }),
     Recipe("Conditional navigation", { ConditionalActivity() }),
+//    Recipe("Retain", { RetainActivity() }),
+//    Recipe("Shared ViewModel", { SharedViewModelActivity() }),
 
 //    Heading("Architecture"),
 //    Recipe("Hilt - Modular Navigation", { HiltModularActivity() }),
 //    Recipe("Koin - Modular Navigation", { KoinModularActivity() }),
+//    Recipe("Dynamic Feature Module Navigation", { DynamicFeatureActivity() }),
 
     Heading("Passing navigation arguments using ViewModels"),
     Recipe("Basic", { BasicViewModelsActivity() }),
@@ -103,6 +111,10 @@ private val recipes = listOf(
 
 //    Heading("Deeplink"),
 //    Recipe("Parse Intent", { CreateDeepLinkActivity() }),
+//    Recipe("Synthetic BackStack", { AdvancedCreateDeepLinkActivity() }),
+
+//    Heading("Interop"),
+//    Recipe("Fragment and View Interop", { InteropActivity() }),
 )
 
 @Composable
