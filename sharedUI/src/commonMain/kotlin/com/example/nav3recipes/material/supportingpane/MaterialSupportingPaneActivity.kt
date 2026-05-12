@@ -20,7 +20,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.BackNavigationBehavior
 import androidx.compose.material3.adaptive.navigation3.SupportingPaneSceneStrategy
@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -68,7 +69,7 @@ fun MaterialSupportingPaneActivity() {
 
     // Override the defaults so that there isn't a horizontal or vertical space between the panes.
     // See b/444438086
-    val windowAdaptiveInfo = currentWindowAdaptiveInfo()
+    val windowAdaptiveInfo = currentWindowAdaptiveInfoV2()
     val directive = remember(windowAdaptiveInfo) {
         calculatePaneScaffoldDirective(windowAdaptiveInfo)
             .copy(horizontalPartitionSpacerSize = 0.dp, verticalPartitionSpacerSize = 0.dp)
@@ -84,13 +85,13 @@ fun MaterialSupportingPaneActivity() {
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
-        sceneStrategy = supportingPaneStrategy,
+        sceneStrategies = listOf(supportingPaneStrategy),
         entryProvider = entryProvider {
             entry<MainVideo>(
                 metadata = SupportingPaneSceneStrategy.mainPane()
             ) {
                 ContentRed("Video content") {
-                    Button(onClick = {
+                    Button(onClick = dropUnlessResumed {
                         backStack.add(RelatedVideos)
                     }) {
                         Text("View related videos")
@@ -102,7 +103,7 @@ fun MaterialSupportingPaneActivity() {
             ) {
                 ContentBlue("Related videos") {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Button(onClick = {
+                        Button(onClick = dropUnlessResumed {
                             backStack.add(Profile)
                         }) {
                             Text("View profile")

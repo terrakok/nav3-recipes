@@ -16,6 +16,8 @@
 
 package com.example.nav3recipes.scenes.listdetail
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -64,6 +66,7 @@ private val config = SavedStateConfiguration {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ListDetailActivity() {
 
@@ -72,34 +75,38 @@ fun ListDetailActivity() {
         val backStack = rememberNavBackStack(config, ConversationList)
         val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
 
-        NavDisplay(
-            backStack = backStack,
-            onBack = { backStack.removeLastOrNull() },
-            sceneStrategy = listDetailStrategy,
-            modifier = Modifier.padding(paddingValues),
-            entryProvider = entryProvider {
-                entry<ConversationList>(
-                    metadata = ListDetailScene.listPane()
-                ) {
-                    ConversationListScreen(
-                        onConversationClicked = { detailRoute ->
-                            backStack.addDetail(detailRoute)
-                        }
-                    )
+        SharedTransitionLayout {
+            NavDisplay(
+                backStack = backStack,
+                onBack = { backStack.removeLastOrNull() },
+                sceneStrategies = listOf(listDetailStrategy),
+                sharedTransitionScope = this,
+                modifier = Modifier.padding(paddingValues),
+                entryProvider = entryProvider {
+                    entry<ConversationList>(
+                        metadata = ListDetailScene.listPane()
+                    ) {
+                        ConversationListScreen(
+                            onConversationClicked = { detailRoute ->
+                                backStack.addDetail(detailRoute)
+                            }
+                        )
+                    }
+                    entry<ConversationDetail>(
+                        metadata = ListDetailScene.detailPane()
+                    ) { conversationDetail ->
+                        ConversationDetailScreen(
+                            conversationDetail = conversationDetail,
+                            onBack = { backStack.removeLastOrNull() },
+                            onProfileClicked = { backStack.add(Profile) }
+                        )
+                    }
+                    entry<Profile> {
+                        ProfileScreen()
+                    }
                 }
-                entry<ConversationDetail>(
-                    metadata = ListDetailScene.detailPane()
-                ) { conversationDetail ->
-                    ConversationDetailScreen(
-                        conversationDetail = conversationDetail,
-                        onProfileClicked = { backStack.add(Profile) }
-                    )
-                }
-                entry<Profile> {
-                    ProfileScreen()
-                }
-            }
-        )
+            )
+        }
     }
 }
 
@@ -108,6 +115,6 @@ private fun NavBackStack<NavKey>.addDetail(detailRoute: ConversationDetail) {
     // Remove any existing detail routes before adding this detail route.
     // In certain scenarios, such as when multiple detail panes can be shown at once, it may
     // be desirable to keep existing detail routes on the back stack.
-    removeAll { it is ConversationDetail }
+    removeIf { it is ConversationDetail }
     add(detailRoute)
 }

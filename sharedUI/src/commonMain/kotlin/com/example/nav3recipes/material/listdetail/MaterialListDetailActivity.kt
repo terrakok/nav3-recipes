@@ -20,7 +20,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -68,7 +69,7 @@ fun MaterialListDetailActivity() {
 
     // Override the defaults so that there isn't a horizontal space between the panes.
     // See b/418201867
-    val windowAdaptiveInfo = currentWindowAdaptiveInfo()
+    val windowAdaptiveInfo = currentWindowAdaptiveInfoV2()
     val directive = remember(windowAdaptiveInfo) {
         calculatePaneScaffoldDirective(windowAdaptiveInfo)
             .copy(horizontalPartitionSpacerSize = 0.dp)
@@ -78,7 +79,7 @@ fun MaterialListDetailActivity() {
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
-        sceneStrategy = listDetailStrategy,
+        sceneStrategies = listOf(listDetailStrategy),
         entryProvider = entryProvider {
             entry<ConversationList>(
                 metadata = ListDetailSceneStrategy.listPane(
@@ -88,7 +89,7 @@ fun MaterialListDetailActivity() {
                 )
             ) {
                 ContentRed("Welcome to Nav3") {
-                    Button(onClick = {
+                    Button(onClick = dropUnlessResumed {
                         backStack.add(ConversationDetail("ABC"))
                     }) {
                         Text("View conversation")
@@ -100,7 +101,7 @@ fun MaterialListDetailActivity() {
             ) { conversation ->
                 ContentBlue("Conversation ${conversation.id} ") {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Button(onClick = {
+                        Button(onClick = dropUnlessResumed {
                             backStack.add(Profile)
                         }) {
                             Text("View profile")

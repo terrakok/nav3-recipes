@@ -19,6 +19,7 @@ package com.example.nav3recipes.scenes.listdetail
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +28,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -35,14 +38,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.example.nav3recipes.ui.theme.colors
+import nav3play.sharedui.generated.resources.Res
+import nav3play.sharedui.generated.resources.arrow_back
+import org.jetbrains.compose.resources.vectorResource
 
 @Composable
 fun ConversationListScreen(
     onConversationClicked: (ConversationDetail) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface),
     ) {
         items(10) { index ->
             val conversationId = index + 1
@@ -54,7 +63,9 @@ fun ConversationListScreen(
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable(onClick = { onConversationClicked(conversationDetail) }),
+                    .clickable(onClick = dropUnlessResumed {
+                        onConversationClicked(conversationDetail)
+                    }),
                 headlineContent = {
                     Text(
                         text = "Conversation $conversationId",
@@ -63,7 +74,7 @@ fun ConversationListScreen(
                     )
                 },
                 colors = ListItemDefaults.colors(
-                    containerColor = backgroundColor // Set container color directly
+                    containerColor = backgroundColor
                 )
             )
         }
@@ -73,24 +84,40 @@ fun ConversationListScreen(
 @Composable
 fun ConversationDetailScreen(
     conversationDetail: ConversationDetail,
+    onBack: () -> Unit,
     onProfileClicked: () -> Unit
 ) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(colors[conversationDetail.colorId])
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(16.dp)
     ) {
-        Text(
-            text = "Conversation Detail Screen: ${conversationDetail.id}",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onProfileClicked) {
-            Text("View Profile")
+        if (LocalBackButtonVisibility.current) {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier.align(Alignment.TopStart)
+            ) {
+                Icon(
+                    imageVector = vectorResource(Res.drawable.arrow_back),
+                    contentDescription = "Back"
+                )
+            }
+        }
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Conversation Detail Screen: ${conversationDetail.id}",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = dropUnlessResumed(block = onProfileClicked)) {
+                Text("View Profile")
+            }
         }
     }
 }

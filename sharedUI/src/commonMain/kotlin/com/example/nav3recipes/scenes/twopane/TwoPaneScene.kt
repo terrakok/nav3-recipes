@@ -3,11 +3,14 @@ package com.example.nav3recipes.scenes.twopane
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavMetadataKey
+import androidx.navigation3.runtime.contains
+import androidx.navigation3.runtime.metadata
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
@@ -19,7 +22,7 @@ import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOW
 /**
  * A custom [Scene] that displays two [NavEntry]s side-by-side in a 50/50 split.
  */
-class TwoPaneScene<T : Any>(
+data class TwoPaneScene<T : Any>(
     override val key: Any,
     override val previousEntries: List<NavEntry<T>>,
     val firstEntry: NavEntry<T>,
@@ -38,20 +41,23 @@ class TwoPaneScene<T : Any>(
     }
 
     companion object {
-        internal const val TWO_PANE_KEY = "TwoPane"
         /**
          * Helper function to add metadata to a [NavEntry] indicating it can be displayed
          * in a two-pane layout.
          */
-        fun twoPane() = mapOf(TWO_PANE_KEY to true)
+        fun twoPane() = metadata {
+            put(TwoPaneKey, true)
+        }
     }
+
+    object TwoPaneKey : NavMetadataKey<Boolean>
 }
 
 @Composable
-fun <T: Any> rememberTwoPaneSceneStrategy() : TwoPaneSceneStrategy<T> {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+fun <T : Any> rememberTwoPaneSceneStrategy(): TwoPaneSceneStrategy<T> {
+    val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
 
-    return remember(windowSizeClass){
+    return remember(windowSizeClass) {
         TwoPaneSceneStrategy(windowSizeClass)
     }
 }
@@ -77,7 +83,7 @@ class TwoPaneSceneStrategy<T : Any>(val windowSizeClass: WindowSizeClass) : Scen
         // Condition 2: Only return a Scene if there are two entries, and both have declared
         // they can be displayed in a two pane scene.
         return if (lastTwoEntries.size == 2
-            && lastTwoEntries.all { it.metadata.containsKey(TwoPaneScene.TWO_PANE_KEY) }
+            && lastTwoEntries.all { it.metadata.contains(TwoPaneScene.TwoPaneKey) }
         ) {
             val firstEntry = lastTwoEntries.first()
             val secondEntry = lastTwoEntries.last()
@@ -102,7 +108,4 @@ class TwoPaneSceneStrategy<T : Any>(val windowSizeClass: WindowSizeClass) : Scen
             null
         }
     }
-
-
 }
-

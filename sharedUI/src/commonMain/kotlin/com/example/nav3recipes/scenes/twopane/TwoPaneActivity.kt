@@ -16,6 +16,8 @@
 
 package com.example.nav3recipes.scenes.twopane
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
@@ -23,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -56,51 +59,55 @@ private val config = SavedStateConfiguration {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TwoPaneActivity() {
     val backStack = rememberNavBackStack(config, Home)
     val twoPaneStrategy = rememberTwoPaneSceneStrategy<NavKey>()
 
-    NavDisplay(
-        backStack = backStack,
-        onBack = { backStack.removeLastOrNull() },
-        sceneStrategy = twoPaneStrategy,
-        entryProvider = entryProvider {
-            entry<Home>(
-                metadata = TwoPaneScene.twoPane()
-            ) {
-                ContentRed("Welcome to Nav3") {
-                    Button(onClick = { backStack.addProductRoute(1) }) {
-                        Text("View the first product")
-                    }
-                }
-            }
-            entry<Product>(
-                metadata = TwoPaneScene.twoPane()
-            ) { product ->
-                ContentBase(
-                    "Product ${product.id} ",
-                    Modifier.background(colors[product.id % colors.size])
+    SharedTransitionLayout {
+        NavDisplay(
+            backStack = backStack,
+            onBack = { backStack.removeLastOrNull() },
+            sceneStrategies = listOf(twoPaneStrategy),
+            sharedTransitionScope = this,
+            entryProvider = entryProvider {
+                entry<Home>(
+                    metadata = TwoPaneScene.twoPane()
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Button(onClick = {
-                            backStack.addProductRoute(product.id + 1)
-                        }) {
-                            Text("View the next product")
-                        }
-                        Button(onClick = {
-                            backStack.add(Profile)
-                        }) {
-                            Text("View profile")
+                    ContentRed("Welcome to Nav3") {
+                        Button(onClick = { backStack.addProductRoute(1) }) {
+                            Text("View the first product")
                         }
                     }
                 }
+                entry<Product>(
+                    metadata = TwoPaneScene.twoPane()
+                ) { product ->
+                    ContentBase(
+                        "Product ${product.id} ",
+                        Modifier.background(colors[product.id % colors.size])
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Button(onClick = dropUnlessResumed {
+                                backStack.addProductRoute(product.id + 1)
+                            }) {
+                                Text("View the next product")
+                            }
+                            Button(onClick = dropUnlessResumed {
+                                backStack.add(Profile)
+                            }) {
+                                Text("View profile")
+                            }
+                        }
+                    }
+                }
+                entry<Profile> {
+                    ContentGreen("Profile (single pane only)")
+                }
             }
-            entry<Profile> {
-                ContentGreen("Profile (single pane only)")
-            }
-        }
-    )
+        )
+    }
 }
 
 private fun NavBackStack<NavKey>.addProductRoute(productId: Int) {

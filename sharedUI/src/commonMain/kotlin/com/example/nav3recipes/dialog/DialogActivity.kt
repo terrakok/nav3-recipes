@@ -24,6 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -59,11 +61,11 @@ fun DialogActivity() {
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
-        sceneStrategy = dialogStrategy,
+        sceneStrategies = listOf(dialogStrategy),
         entryProvider = entryProvider {
             entry<RouteA> {
                 ContentGreen("Welcome to Nav3") {
-                    Button(onClick = {
+                    Button(onClick = dropUnlessResumed {
                         backStack.add(RouteB("123"))
                     }) {
                         Text("Click to open dialog")
@@ -71,7 +73,9 @@ fun DialogActivity() {
                 }
             }
             entry<RouteB>(
-                metadata = DialogSceneStrategy.dialog()
+                metadata = DialogSceneStrategy.dialog(
+                    DialogProperties()
+                )
             ) { key ->
                 ContentBlue(
                     title = "Route id: ${key.id}",
