@@ -12,6 +12,7 @@ pluginManagement {
         }
         gradlePluginPortal()
         mavenCentral()
+        maven("https://packages.jetbrains.team/maven/p/cmp/dev")
     }
 }
 
@@ -26,6 +27,7 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        maven("https://packages.jetbrains.team/maven/p/cmp/dev")
     }
 }
 include(":sharedUI")
